@@ -1,5 +1,3 @@
-const FIVE_SECONDS_IN_MILLISECONDS = 5000
-
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
 const MIDDLE_OF_SCREEN = GAME_WIDTH / 2;
@@ -7,6 +5,8 @@ const DIVIDER_WIDTH = 4;
 
 const ROAD_WIDTH = 100;
 const LIGHT_GRAY = 0xC0C0C0;
+
+const SPAWN_RATE = 2000;
 
 const config = {
   type: Phaser.AUTO,
@@ -68,6 +68,21 @@ class DCLState {
     this.isPlaying = true;
     this.enemies = [];
   }
+
+  cleanUpOffscreenEnemies() {
+    this.enemies = _.filter(this.enemies, (enemy) => {
+      if (enemy.x > GAME_WIDTH || 
+        enemy.x < 0 ||
+        enemy.y > GAME_HEIGHT ||
+        enemy.y < 0) {
+          console.log("removing enemy")
+          enemy.destroy();
+          return false;
+        } else {
+          return true;
+        }
+    });
+  }
 }
 
 const setBackground = (scene) => {
@@ -121,10 +136,11 @@ function create() {
 
   this.time.addEvent({
     loop: true,
-    delay: FIVE_SECONDS_IN_MILLISECONDS,
+    delay: SPAWN_RATE,
     callback: addEnemy
   });
 }
 
 function update(time, delta) {
+  state.cleanUpOffscreenEnemies()
 }
