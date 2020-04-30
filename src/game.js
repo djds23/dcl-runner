@@ -124,6 +124,9 @@ function create() {
   let scoreLabel = this.add.text(0, 0, "");
   state = new DCLState(player, scoreLabel);
 
+  let instructionLabel = this.add.text(200, 150, "SWIPE TO MOVE")
+  instructionLabel.setDisplaySize(400, 300);
+
   const addEnemy = () => {
     const hitEnemy = () => {
       this.physics.pause();
@@ -149,6 +152,7 @@ function create() {
 
   this.input.on('pointermove', (pointer) => {
     this.physics.moveToObject(player, pointer, 300);
+    instructionLabel.destroy()
   })
 
 
