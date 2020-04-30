@@ -6,7 +6,7 @@ const DIVIDER_WIDTH = 4;
 const ROAD_WIDTH = 100;
 const LIGHT_GRAY = 0xC0C0C0;
 
-const SPAWN_RATE = 2000;
+const SPAWN_RATE = 1000;
 
 const config = {
   type: Phaser.AUTO,
@@ -63,10 +63,12 @@ const ENEMIES = [
 let state;
 
 class DCLState {
-  constructor(player) {
+  constructor(player, scoreLabel) {
     this.player = player;
+    this.scoreLabel = scoreLabel;
     this.isPlaying = true;
     this.enemies = [];
+    this.score = 0;
   }
 
   cleanUpOffscreenEnemies() {
@@ -75,14 +77,17 @@ class DCLState {
         enemy.x < 0 ||
         enemy.y > GAME_HEIGHT ||
         enemy.y < 0) {
-          console.log("removing enemy")
           enemy.destroy();
+          this.score += 100
+          this.scoreLabel.setText(`Score: ${this.score}`);
           return false;
         } else {
           return true;
         }
     });
   }
+
+  
 }
 
 const setBackground = (scene) => {
@@ -115,7 +120,9 @@ function create() {
   player.setVelocity(100, 200);
   player.setBounce(1, 1);
   player.setCollideWorldBounds(true);
-  state = new DCLState(player);
+  
+  let scoreLabel = this.add.text(0, 0, "");
+  state = new DCLState(player, scoreLabel);
 
   const addEnemy = () => {
     const hitEnemy = () => {
@@ -139,6 +146,12 @@ function create() {
     delay: SPAWN_RATE,
     callback: addEnemy
   });
+
+  this.input.on('pointermove', (pointer) => {
+    this.physics.moveToObject(player, pointer, 300);
+  })
+
+
 }
 
 function update(time, delta) {
